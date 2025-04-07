@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Asistencia EBDV 2025</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Estilos personalizados */
+    .attendance-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 32, 74, 0.1);
+    }
+    
+    .header-title {
+      color: #00204a;
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 700;
+    }
+    
+    .header-title span {
+      color: #00bbf0;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .search-box {
+  position: relative;
+  /* Eliminamos flex: 1 y min-width para mayor control */
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px 12px 8px 30px; /* Padding más compacto */
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px; /* Tamaño de fuente más pequeño */
+  max-width: 200px; /* Ancho máximo reducido */
+}
+
+.search-box i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #00bbf0;
+  font-size: 14px;
+}
+    
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-select {
+      padding: 10px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 16px;
+      min-width: 150px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: #00bbf0;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #007fa4;
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #00204a;
+      border: 2px solid #00204a;
+    }
+    
+    .btn-secondary:hover {
+      background: #00204a;
+      color: white;
+    }
+    
+    .attendance-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+    
+    .attendance-table th {
+      background: #00204a;
+      color: white;
+      padding: 12px 15px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+    
+    .attendance-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .attendance-table tr:hover {
+      background-color: #f8f8f9;
+    }
+    
+    .attendance-day {
+      text-align: center;
+      min-width: 50px;
+    }
+    
+    .present {
+      color: #4CAF50;
+      cursor: pointer;
+    }
+    
+    .absent {
+      color: #F44336;
+      cursor: pointer;
+    }
+    
+    .group-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .rayitos { background: #FFD700; color: #000; }
+    .luceritos { background: #FFA500; color: #000; }
+    .mensajeras { background: #9370DB; color: #fff; }
+    .exploradores { background: #4169E1; color: #fff; }
+    .lideres { background: #32CD32; color: #000; }
+    
+    .actions-cell {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #00bbf0;
+      font-size: 16px;
+    }
+    
+    .action-btn:hover {
+      color: #007fa4;
+    }
+    
+    .summary-cards {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .summary-card {
+      flex: 1;
+      min-width: 200px;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .summary-card h3 {
+      color: #00204a;
+      margin-top: 0;
+      font-size: 18px;
+    }
+    
+    .summary-card p {
+      font-size: 24px;
+      font-weight: 700;
+      color: #00bbf0;
+      margin: 10px 0 0 0;
+    }
+    
+    .date-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #00bbf0;
+    }
+    
+    .current-date {
+      font-size: 18px;
+      font-weight: 600;
+      color: #00204a;
+    }
+    
+    .current-date span {
+      color: #00bbf0;
+    }
+    
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+      }
+      
+      .search-box {
+        width: 100%;
+      }
+      
+      .attendance-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body class="sub_page">
+
+  <div class="hero_area">
+    <div class="hero_bg_box">
+      <div class="bg_img_box">
+        <img src="images/hero-bg.png" alt="">
+      </div>
+    </div>
+
+    <header class="header_section">
+      <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg custom_nav-container">
+          <a class="navbar-brand" href="index.html">
+            <img src="images/bethel.png" alt="Logo" class="logo-img" style="height: 50px; width: auto;">
+            <span>EBDV</span>
+          </a>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="index.html"><i class="fas fa-home"></i> Inicio</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </header>
+  </div>
+
+  <section class="about_section layout_padding">
+    <div class="container">
+      <div class="heading_container heading_center">
+        <h2>LISTA DE <span>ASISTENCIA</span></h2>
+        <p>Escuela Bíblica de Verano 2025</p>
+      </div>
+      
+      <div class="attendance-container">
+        <!-- Fecha actual -->
+        <div class="date-header">
+          <div class="current-date">
+            Fecha actual: <span id="currentDate"></span>
+          </div>
+          <div class="current-date">
+            Semana: <span id="currentWeek"></span>
+          </div>
+          <div style="text-align: right; margin-top: 20px;">
+            <a href="formulario.html" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Registrar
+            </a>
+          </div>
+        </div>
+        
+        <!-- Resumen estadístico -->
+        <div class="summary-cards">
+          <div class="summary-card">
+            <h3>Total Inscritos</h3>
+            <p id="totalStudents">48</p>
+          </div>
+          <div class="summary-card">
+            <h3>Asistencia Hoy</h3>
+            <p id="todayAttendance">42</p>
+          </div>
+          <div class="summary-card">
+            <h3>Porcentaje</h3>
+            <p id="attendancePercentage">87.5%</p>
+          </div>
+          <div class="summary-card">
+            <h3>Fecha Registro</h3>
+            <p id="lastUpdate">Hoy</p>
+          </div>
+        </div>
+        
+        <!-- Controles -->
+        <div class="controls">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <div class="search-box" style="max-width: 200px;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar niño..." style="padding: 8px 12px 8px 30px; font-size: 14px;">
+              </div>
+          </div>
+          
+          <div class="filter-group">
+            <select class="filter-select" id="groupFilter">
+              <option value="">Todos grupos</option>
+              <option value="rayitos">Rayitos</option>
+              <option value="luceritos">Luceritos</option>
+              <option value="mensajeras">Mensajeras</option>
+              <option value="exploradores">Exploradores</option>
+              <option value="lideres">Líderes</option>
+            </select>
+            
+            <select class="filter-select" id="dayFilter">
+              <option value="">Todos los días</option>
+              <option value="lunes">Lunes</option>
+              <option value="martes">Martes</option>
+              <option value="miercoles">Miércoles</option>
+              <option value="jueves">Jueves</option>
+              <option value="viernes">Viernes</option>
+              <option value="sabado">Sábado</option>
+            </select>
+            
+            <button class="btn btn-primary" id="printBtn">
+              <i class="fas fa-print"></i> Imprimir
+            </button>
+          </div>
+        </div>
+        
+        <!-- Tabla de asistencia -->
+        <div style="overflow-x: auto;">
+          <table class="attendance-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Edad</th>
+                <th>Grupo</th>
+                <th>Fecha Registro</th>
+                <th>Lunes<br><span class="date-small" id="lunesDate"></span></th>
+                <th>Martes<br><span class="date-small" id="martesDate"></span></th>
+                <th>Miércoles<br><span class="date-small" id="miercolesDate"></span></th>
+                <th>Jueves<br><span class="date-small" id="juevesDate"></span></th>
+                <th>Viernes<br><span class="date-small" id="viernesDate"></span></th>
+                <th>Sábado<br><span class="date-small" id="sabadoDate"></span></th>
+                <th>Asistencia</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceBody">
+              <!-- Datos se llenarán con JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="footer_section">
+    <div class="container">
+      <p>
+        &copy; <span id="displayYear"></span> Iglesia Bethel - EBDV 2025
+      </p>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.js"></script>
+  <script>
+    // Mostrar año actual
+    document.getElementById('displayYear').textContent = new Date().getFullYear();
+    
+    // Función para formatear fecha
+    function formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('es-ES', options);
+    }
+    
+    // Función para obtener fechas de la semana
+    function getWeekDates() {
+      const now = new Date();
+      const currentDay = now.getDay(); // 0=Domingo, 1=Lunes, etc.
+      const currentDate = now.getDate();
+      
+      // Ajustar para que la semana empiece el lunes
+      const monday = new Date(now);
+      monday.setDate(currentDate - (currentDay === 0 ? 6 : currentDay - 1));
+      
+      const weekDates = {};
+      const days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+      
+      days.forEach((day, index) => {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + index);
+        weekDates[day] = date.getDate() + '/' + (date.getMonth() + 1);
+      });
+      
+      return weekDates;
+    }
+    
+    // Mostrar fechas actuales
+    const now = new Date();
+    document.getElementById('currentDate').textContent = formatDate(now);
+    document.getElementById('lastUpdate').textContent = formatDate(now);
+    
+    // Mostrar semana actual
+    const weekDates = getWeekDates();
+    document.getElementById('currentWeek').textContent = `Del ${weekDates.lunes} al ${weekDates.sabado}`;
+    
+    // Mostrar fechas específicas para cada día
+    document.getElementById('lunesDate').textContent = weekDates.lunes;
+    document.getElementById('martesDate').textContent = weekDates.martes;
+    document.getElementById('miercolesDate').textContent = weekDates.miercoles;
+    document.getElementById('juevesDate').textContent = weekDates.jueves;
+    document.getElementById('viernesDate').textContent = weekDates.viernes;
+    document.getElementById('sabadoDate').textContent = weekDates.sabado;
+    
+    // Datos de ejemplo con fechas de registro
+    const students = [
+      { 
+        id: 1, 
+        nombre: "Ana", 
+        apellido: "García", 
+        edad: 8, 
+        grupo: "luceritos",
+        fechaRegistro: "15/06/2025",
+        asistencia: { 
+          lunes: { present: true, date: "17/06/2025" }, 
+          martes: { present: true, date: "18/06/2025" }, 
+          miercoles: { present: false, date: "19/06/2025" }, 
+          jueves: { present: true, date: "20/06/2025" }, 
+          viernes: { present: true, date: "21/06/2025" }, 
+          sabado: { present: false, date: "22/06/2025" } 
+        } 
+      },
+      { 
+        id: 2, 
+        nombre: "Carlos", 
+        apellido: "Martínez", 
+        edad: 10, 
+        grupo: "mensajeras",
+        fechaRegistro: "10/06/2025",
+        asistencia: { 
+          lunes: { present: true, date: "17/06/2025" }, 
+          martes: { present: false, date: "18/06/2025" }, 
+          miercoles: { present: true, date: "19/06/2025" }, 
+          jueves: { present: true, date: "20/06/2025" }, 
+          viernes: { present: false, date: "21/06/2025" }, 
+          sabado: { present: true, date: "22/06/2025" } 
+        } 
+      },
+      { 
+        id: 3, 
+        nombre: "Lucía", 
+        apellido: "Rodríguez", 
+        edad: 5, 
+        grupo: "rayitos",
+        fechaRegistro: "20/06/2025",
+        asistencia: { 
+          lunes: { present: false, date: "17/06/2025" }, 
+          martes: { present: true, date: "18/06/2025" }, 
+          miercoles: { present: true, date: "19/06/2025" }, 
+          jueves: { present: false, date: "20/06/2025" }, 
+          viernes: { present: true, date: "21/06/2025" }, 
+          sabado: { present: true, date: "22/06/2025" } 
+        } 
+      },
+      { 
+        id: 4, 
+        nombre: "Diego", 
+        apellido: "Hernández", 
+        edad: 11, 
+        grupo: "exploradores",
+        fechaRegistro: "05/06/2025",
+        asistencia: { 
+          lunes: { present: true, date: "17/06/2025" }, 
+          martes: { present: true, date: "18/06/2025" }, 
+          miercoles: { present: true, date: "19/06/2025" }, 
+          jueves: { present: true, date: "20/06/2025" }, 
+          viernes: { present: true, date: "21/06/2025" }, 
+          sabado: { present: false, date: "22/06/2025" } 
+        } 
+      },
+      { 
+        id: 5, 
+        nombre: "María", 
+        apellido: "López", 
+        edad: 9, 
+        grupo: "luceritos",
+        fechaRegistro: "12/06/2025",
+        asistencia: { 
+          lunes: { present: true, date: "17/06/2025" }, 
+          martes: { present: false, date: "18/06/2025" }, 
+          miercoles: { present: false, date: "19/06/2025" }, 
+          jueves: { present: true, date: "20/06/2025" }, 
+          viernes: { present: true, date: "21/06/2025" }, 
+          sabado: { present: true, date: "22/06/2025" } 
+        } 
+      },
+      { 
+        id: 6, 
+        nombre: "Javier", 
+        apellido: "Gómez", 
+        edad: 12, 
+        grupo: "lideres",
+        fechaRegistro: "01/06/2025",
+        asistencia: { 
+          lunes: { present: true, date: "17/06/2025" }, 
+          martes: { present: true, date: "18/06/2025" }, 
+          miercoles: { present: true, date: "19/06/2025" }, 
+          jueves: { present: true, date: "20/06/2025" }, 
+          viernes: { present: true, date: "21/06/2025" }, 
+          sabado: { present: true, date: "22/06/2025" } 
+        } 
+      }
+    ];
+    
+    // Función para renderizar la tabla
+    function renderTable(data) {
+      const tbody = document.getElementById('attendanceBody');
+      tbody.innerHTML = '';
+      
+      data.forEach((student, index) => {
+        const totalAsistencia = Object.values(student.asistencia).filter(a => a.present).length;
+        const diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${student.nombre}</td>
+          <td>${student.apellido}</td>
+          <td>${student.edad}</td>
+          <td><span class="group-badge ${student.grupo}">${getGroupName(student.grupo)}</span></td>
+          <td>${student.fechaRegistro}</td>
+          ${diasSemana.map(day => `
+            <td class="attendance-day" title="${student.asistencia[day].date}">
+              <i class="fas fa-${student.asistencia[day].present ? 'check-circle present' : 'times-circle absent'}" 
+                 onclick="toggleAttendance(${student.id}, '${day}')"></i>
+            </td>
+          `).join('')}
+          <td>${totalAsistencia}/6</td>
+          <td class="actions-cell">
+            <button class="action-btn" onclick="editStudent(${student.id})" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn" onclick="deleteStudent(${student.id})" title="Eliminar">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+      
+      updateSummary(data);
+    }
+    
+    // Función para obtener nombre completo del grupo
+    function getGroupName(groupKey) {
+      const groups = {
+        rayitos: 'Rayitos',
+        luceritos: 'Luceritos',
+        mensajeras: 'Mensajeras',
+        exploradores: 'Exploradores',
+        lideres: 'Líderes'
+      };
+      return groups[groupKey] || groupKey;
+    }
+    
+    // Función para alternar asistencia
+    function toggleAttendance(studentId, day) {
+      const student = students.find(s => s.id === studentId);
+      if (student) {
+        student.asistencia[day].present = !student.asistencia[day].present;
+        renderTable(students);
+      }
+    }
+    
+    // Función para actualizar el resumen
+    function updateSummary(data) {
+      document.getElementById('totalStudents').textContent = data.length;
+      
+      const today = new Date().getDay(); // 0=Domingo, 1=Lunes, etc.
+      const days = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+      const todayKey = days[today];
+      
+      // Si es domingo, no hay clases
+      const todayAttendance = today === 0 ? 0 : 
+        data.filter(s => s.asistencia[todayKey]?.present).length;
+      
+      document.getElementById('todayAttendance').textContent = today === 0 ? 'N/A' : todayAttendance;
+      
+      const percentage = data.length > 0 ? 
+        Math.round((todayAttendance / data.length) * 100) : 0;
+      document.getElementById('attendancePercentage').textContent = today === 0 ? 'N/A' : `${percentage}%`;
+    }
+    
+    // Funciones de filtrado
+    document.getElementById('searchInput').addEventListener('input', function() {
+      filterTable();
+    });
+    
+    document.getElementById('groupFilter').addEventListener('change', function() {
+      filterTable();
+    });
+    
+    document.getElementById('dayFilter').addEventListener('change', function() {
+      filterTable();
+    });
+    
+    function filterTable() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const groupFilter = document.getElementById('groupFilter').value;
+      const dayFilter = document.getElementById('dayFilter').value;
+      
+      let filtered = students.filter(student => {
+        const nameMatch = `${student.nombre} ${student.apellido}`.toLowerCase().includes(searchTerm);
+        const groupMatch = groupFilter ? student.grupo === groupFilter : true;
+        const dayMatch = dayFilter ? student.asistencia[dayFilter]?.present : true;
+        
+        return nameMatch && groupMatch && dayMatch;
+      });
+      
+      renderTable(filtered);
+    }
+    
+    // Funciones para botones
+    function editStudent(id) {
+      alert(`Editar estudiante con ID: ${id}`);
+      // Aquí iría la lógica para editar
+    }
+    
+    function deleteStudent(id) {
+      if (confirm('¿Estás seguro de eliminar este registro?')) {
+        const index = students.findIndex(s => s.id === id);
+        if (index !== -1) {
+          students.splice(index, 1);
+          renderTable(students);
+        }
+      }
+    }
+    
+    
+    document.getElementById('printBtn').addEventListener('click', function() {
+      window.print();
+    });
+    
+    // Inicializar tabla con datos
+    renderTable(students);
+
+
+  // Desplazar automáticamente a la tabla de asistencia al cargar
+  document.addEventListener('DOMContentLoaded', function() {
+    const attendanceTable = document.querySelector('.attendance-table');
+    if (attendanceTable) {
+      attendanceTable.scrollIntoView({ 
+        behavior: 'smooth', // Efecto suave
+        block: 'center'     // Centra verticalmente
+      });
+    }
+  });
+    
+  </script>
+</body>
+</html>
